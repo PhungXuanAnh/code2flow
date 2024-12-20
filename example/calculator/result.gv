@@ -1,0 +1,57 @@
+digraph G {
+concentrate=true;
+splines="ortho";
+rankdir="LR";
+subgraph legend{
+    rank = min;
+    label = "legend";
+    Legend [shape=none, margin=0, label = <
+        <table cellspacing="0" cellpadding="0" border="1"><tr><td>Code2flow Legend</td></tr><tr><td>
+        <table cellspacing="0">
+        <tr><td>Regular function</td><td width="50px" bgcolor='#cccccc'></td></tr>
+        <tr><td>Trunk function (nothing calls this)</td><td bgcolor='#966F33'></td></tr>
+        <tr><td>Leaf function (this calls nothing else)</td><td bgcolor='#6db33f'></td></tr>
+        <tr><td>Function call</td><td><font color='black'>&#8594;</font></td></tr>
+        </table></td></tr></table>
+        >];
+}node_fd553057 [label="5: add()" name="calculator::Calculator.add" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_3ed7dce7 [label="14: divide()" name="calculator::Calculator.divide" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_b102b47f [label="11: multiply()" name="calculator::Calculator.multiply" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_fd1fe154 [label="8: subtract()" name="calculator::Calculator.subtract" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_600fab9e [label="0: (global)()" name="main::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_aa0c48b6 [label="11: main()" name="main::main" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_16f432cc [label="0: (global)()" name="run_directly::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_600fab9e -> node_aa0c48b6 [color="#D55E00" penwidth="2"];
+node_aa0c48b6 -> node_fd553057 [color="#D55E00" penwidth="2"];
+node_aa0c48b6 -> node_3ed7dce7 [color="#D55E00" penwidth="2"];
+node_aa0c48b6 -> node_b102b47f [color="#D55E00" penwidth="2"];
+node_aa0c48b6 -> node_fd1fe154 [color="#D55E00" penwidth="2"];
+node_16f432cc -> node_aa0c48b6 [color="#F0E442" penwidth="2"];
+subgraph cluster_13446468 {
+    label="File: calculator";
+    name="calculator";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_d4a7695f {
+        node_fd553057 node_fd1fe154 node_b102b47f node_3ed7dce7;
+        label="Class: Calculator";
+        name="Calculator";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_20227cf2 {
+    node_aa0c48b6 node_600fab9e;
+    label="File: main";
+    name="main";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_2b78de8c {
+    node_16f432cc;
+    label="File: run_directly";
+    name="run_directly";
+    style="filled";
+    graph[style=dotted];
+};
+}
