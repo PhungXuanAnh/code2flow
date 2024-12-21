@@ -376,6 +376,11 @@ def _find_link_for_call(call, node_a, all_nodes):
     :rtype: (Node|None, Call|None)
     """
 
+    # if node_a.token == 'get' and node_a.parent.token == 'DirectVAST':
+    #     if call.token == 'executor':
+    #         print('a')
+    #     if call.token == 'build_env_from_handler':
+    #         print('a')
     all_vars = node_a.get_variables(call.line_number)
 
     for var in all_vars:
@@ -402,6 +407,8 @@ def _find_link_for_call(call, node_a, all_nodes):
                 possible_nodes.append(node)
             elif call.token == node.parent.token and node.is_constructor:
                 possible_nodes.append(node)
+            # elif call.token == node.parent.token and node.token == "__call__":
+            #     possible_nodes.append(node)
 
     if len(possible_nodes) == 1:
         return possible_nodes[0], None
@@ -427,6 +434,10 @@ def _find_links(node_a, all_nodes):
         assert not isinstance(lfc, Group)
         links.append(lfc)
     return list(filter(None, links))
+
+
+# callable_classes = set()
+# callable_instances = {}
 
 
 def map_it(sources, extension, no_trimming, exclude_namespaces, exclude_functions,
@@ -471,6 +482,15 @@ def map_it(sources, extension, no_trimming, exclude_namespaces, exclude_function
                 logging.warning("Could not parse %r. (%r) Skipping...", source, ex)
             else:
                 raise ex
+    # 1.1 find all classes in which their instances are callable and their instances
+    # if extension == "py":
+    #     for source, file_ast_tree in file_ast_trees:
+    #         callable_classes.update(language.find_callable_classes(file_ast_tree))
+
+    #     for source, file_ast_tree in file_ast_trees:
+    #         callable_instances.update(
+    #             language.find_callable_instances(file_ast_tree, callable_classes)
+    #         )
 
     # 2. Find all groups (classes/modules) and nodes (functions) (a lot happens here)
     file_groups = []
@@ -487,6 +507,14 @@ def map_it(sources, extension, no_trimming, exclude_namespaces, exclude_function
     # 4. Consolidate structures
     all_subgroups = flatten(g.all_groups() for g in file_groups)
     all_nodes = flatten(g.all_nodes() for g in file_groups)
+
+    # 4.1 Update all call instances to be __call__ Node
+    # for tmp_call in flatten(n.calls for n in all_nodes):
+    #     if tmp_call.token in callable_instances:
+    #         tmp_node_token = callable_instances[tmp_call.token]
+    #         for tmp_node in all_nodes:
+    #             if tmp_node.parent.token == tmp_node_token and tmp_node.token == "__call__":
+    #                 tmp_call.call_function_node = tmp_node
 
     nodes_by_subgroup_token = collections.defaultdict(list)
     for subgroup in all_subgroups:

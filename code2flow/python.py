@@ -201,6 +201,8 @@ class Python(BaseLanguage):
         :rtype: list[Node]
         """
         token = tree.name
+        # if token == "(global)" and parent.group_type == GROUP_TYPE.FILE:
+        #     print("a")
         line_number = tree.lineno
         calls = make_calls(tree.body)
         variables = make_local_variables(tree.body, parent)
@@ -273,3 +275,41 @@ class Python(BaseLanguage):
         :rtype: list[str]
         """
         return [os.path.split(filename)[-1].rsplit('.py', 1)[0]]
+
+    # @staticmethod
+    # def find_callable_classes(node):
+    #     """find all the classes that have a __call__ method
+
+    #     Args:
+    #         node (_type_): _description_
+
+    #     Returns:
+    #         _type_: _description_
+    #     """
+    #     callables = set()
+    #     for _node in node.body:
+    #         if isinstance(_node, ast.ClassDef):
+    #             class_node = _node
+    #             for __node in class_node.body:
+    #                 if (
+    #                     isinstance(__node, ast.FunctionDef)
+    #                     and __node.name == "__call__"
+    #                 ):
+    #                     callables.add(class_node.name)
+    #     return callables
+
+    # @staticmethod
+    # def find_callable_instances(root_node_tree, callable_classes):
+    #     callable_instances = {}
+    #     for tree in root_node_tree.body:
+    #         for element in ast.walk(tree):
+    #             if type(element) == ast.Assign:
+    #                 if isinstance(element.value, ast.Call) and isinstance(
+    #                     element.value.func, ast.Name
+    #                 ):
+    #                     class_name = element.value.func.id
+    #                     if class_name in callable_classes:
+    #                         for target in element.targets:
+    #                             if isinstance(target, ast.Name):
+    #                                 callable_instances[target.id] = class_name
+    #     return callable_instances

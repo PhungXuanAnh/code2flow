@@ -249,6 +249,8 @@ class Call():
                         return node
 
             return None
+        # if self.token == "build_env_from_handler" and self.line_number == 35:
+        #     print("")
         if self.token == variable.token:
             if isinstance(variable.points_to, Node):
                 return variable.points_to
@@ -256,6 +258,11 @@ class Call():
                and variable.points_to.group_type == GROUP_TYPE.CLASS \
                and variable.points_to.get_constructor():
                 return variable.points_to.get_constructor()
+
+        if hasattr(variable, "origin_points_to"):
+            if self.token == variable.origin_points_to.token:
+                return variable.points_to
+
         return None
 
 
@@ -383,6 +390,10 @@ class Node():
         :param list[Group] file_groups:
         :rtype: None
         """
+
+        # if self.token == "get" and self.parent.token == "DirectVAST":
+        #     print("a")
+
         for variable in self.variables:
             if isinstance(variable.points_to, str):
                 variable.points_to = _resolve_str_variable(variable, file_groups)
@@ -392,6 +403,47 @@ class Node():
                 # Only process Class(); Not a.Class()
                 if call.is_attr() and not call.definite_constructor:
                     continue
+                # process the callable class instance
+                #       find the class of the called instance
+                class_instance = None
+                __call__node = None
+                for v in self.variables:
+                    if variable.points_to.token == v.token:
+                        # if the v is not updated after
+                        # the last for loop, it still points to a Call
+                        # then find the class instance of the call
+                        # to find the __call__ node in the next if statement
+                        if (
+                            isinstance(v.points_to, Call)
+                            and v.points_to.owner_token is None
+                        ):
+                            class_instance = v.points_to.token
+                            break
+                        # if the v is updated after the last for loop
+                        # and points to a Group
+                        # then just find the __call__node of the Group
+                        if isinstance(v.points_to, Group):
+                            for node in v.points_to.all_nodes():
+                                if node.token == "__call__":
+                                    __call__node = node
+                                    break
+                #       find the __call__ node of the class instance
+                #       it is not found after the above for loop
+                if not __call__node and class_instance:
+                    for group in flatten(
+                        file_group.all_groups() for file_group in file_groups
+                    ):
+                        if group.token == class_instance:
+                            for node in group.all_nodes():
+                                if node.token == "__call__":
+                                    __call__node = node
+                                    break
+                #       assign points_to of variable to the __call__ node
+                if __call__node:
+                    variable.origin_points_to = variable.points_to
+                    variable.points_to = __call__node
+                    continue
+
                 # Else, assume the call is a constructor.
                 # iterate through to find the right group
                 for file_group in file_groups:
