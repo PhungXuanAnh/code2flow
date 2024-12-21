@@ -3,6 +3,12 @@
     example/callable_class_instance/callable_class_instance.py \
     --output example/callable_class_instance/result.png \
     --language py
+    
+.venv/bin/python -m debugpy --listen localhost:5678 --wait-for-client run_directly.py \
+    example/callable_class_instance/callable_class_instance.py \
+    --output example/callable_class_instance/result.png \
+    --language py
+
 """
 class Adder:
     def __init__(self, value):
