@@ -67,9 +67,17 @@ def process_assign(element):
     :rtype: Variable
     """
 
-    if type(element.value) != ast.Call:
+    if type(element.value) == ast.Call:
+        func = element.value.func
+    elif type(element.value) == ast.Await:
+        if type(element.value.value) == ast.Call:
+            func = element.value.value.func
+        else:
+            logging.info("process_assing =========> Ignore Await element: %s", element.value.value)
+            return []
+    else:
         return []
-    call = get_call_from_func_element(element.value.func)
+    call = get_call_from_func_element(func)
     if not call:
         return []
 

@@ -25,7 +25,17 @@
     --output example/callable_class_instance/result.png \
     --language py
 
+
 .venv/bin/python run_directly.py \
+    /home/xuananh/work/viralize/viralize \
+    --target-function svast::SVAST.get  \
+    --downstream-depth=3 \
+    --exclude-namespaces=kpi_optimizer,rate_limiters_update \
+    --language=py \
+    --output=svast_get.png
+
+
+.venv/bin/python -m debugpy --listen localhost:5678 --wait-for-client run_directly.py \
     /home/xuananh/work/viralize/viralize \
     --target-function svast::SVAST.get  \
     --downstream-depth=3 \
